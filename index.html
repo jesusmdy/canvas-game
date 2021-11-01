@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./tailwind.min.css" rel="stylesheet">
+  <link href="./styles.css" rel="stylesheet">
+  <title>HTML Canvas Tutorial</title>
+</head>
+<body>
+  <div class="fixed">
+    <div class="text-white text-sm px-2 py-2 select-none">
+      Score: <span id="score">0</span>
+    </div>
+  </div>
+  <div id="modal" class="fixed inset-0 flex items-center justify-center">
+    <div class="bg-white max-w-md w-full p-6 text-center rounded-xl">
+      <h1 id="modalScore" class="text-4xl font-bold">0</h1>
+      <p class="text-sm text-gray-700">Score</p>
+      <div>
+        <button id="startGame" class="bg-blue-500 text-sm rounded-full font-bold mt-5 w-full py-3 text-white">Play Game</button>
+      </div>
+    </div>
+  </div>
+  <canvas id="element"></canvas>
+  <script src="./gsap.min.js"></script>
+  <script src="./canvas.js"></script>
+</body>
+</html>
