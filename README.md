@@ -7,4 +7,6 @@ This is a project maded by a tutorial but with different methods and paradigm
 * Bullets
 * Particles
 
+Play this game [here](https://jesusmdy.github.io/canvas-game/)
+
 *feel free to modify or share*
