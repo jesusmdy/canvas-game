@@ -41,6 +41,20 @@ class Projectile {
     this.y = this.y + this.velocity.y
   }
 }
+class Explosive{
+  constructor(x, y, radius, color) {
+    this.x = x
+    this.y = y
+    this.radius = radius
+    this.color = color
+  }
+  draw() {
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+    ctx.fillStyle = this.color
+    ctx.fill()
+  }
+}
 class Enemy {
   constructor(x, y, radius, color, velocity) {
     this.x = x
@@ -95,15 +109,19 @@ let y
 let player
 let projectiles
 let enemies
+let explosives
 let particles
 let animationId
 let score
+let enemySpawnInterval
+let explosiveSpawnInterval
 function init() {
   x = canvas.width / 2
   y = canvas.height / 2
   player = new Player(x, y, 15, '#fff')
   projectiles = []
   enemies = []
+  explosives = []
   particles = []
   score = 0
   modalScoreEl.textContent = '0'
@@ -112,7 +130,7 @@ function init() {
 }
 
 function spawnEnemies() {
-  setInterval(() => {
+  return setInterval(() => {
     const {width, height} = canvas
     const color = `hsl(${Math.random() * 360}, 50%, 50%)`
     const radius = Math.random() * (35 - 4) + 4
@@ -133,6 +151,15 @@ function spawnEnemies() {
     const enemy = new Enemy(xPos, yPos, radius, color, velocity)
     enemies.push(enemy)
   }, 1000)
+}
+function spawnExplosives() {
+	return setInterval(() => {
+		const {width, height} = canvas
+		let xPos = Math.random() * width
+		let yPos = Math.random() * height
+		const explosive = new Explosive(xPos, yPos, 10, 'hsl(180), 50%, 50%')
+		explosives.push(explosive)
+	}, 6000)
 }
 function animate() {
   animationId = requestAnimationFrame(animate)
@@ -166,6 +193,8 @@ function animate() {
     const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y)
     if(distance - enemy.radius - player.radius < 1) {
       // end game
+	  clearInterval(enemySpawnInterval)
+	  clearInterval(explosiveSpawnInterval)
       cancelAnimationFrame(animationId)
       modalEl.style.display = 'flex'
       modalScoreEl.textContent = score
@@ -209,6 +238,47 @@ function animate() {
       }
     })
   })
+  explosives.forEach((explosive, explosiveIndex) => {
+	explosive.draw()
+    projectiles.forEach((projectile, projectileIndex) => {
+      const distance = Math.hypot(projectile.x - explosive.x, projectile.y - explosive.y)
+      // projectile touch explosive
+      if(distance - explosive.radius - projectile.radius < 1) {
+        
+        // create explosions
+        for (let i = 0; i < explosive.radius * 2; i++) {
+          const particle = new Particle(
+            projectile.x,
+            projectile.y,
+            Math.random() * 2,
+            explosive.color, {
+            x: Math.random() - 0.5 * (Math.random() * 6),
+            y: Math.random() - 0.5 * (Math.random() * 6)
+          })
+          particles.push(particle)
+        }
+
+		for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 8) {
+		  const velocity = {
+		    x: Math.cos(angle) * 5,
+			y: Math.sin(angle) * 5
+		  }
+		  let interval = setInterval(() => {
+			const projectile = new Projectile(explosive.x, explosive.y, 5, '#fff', velocity)
+			projectiles.push(projectile)
+		  }, 200)
+		  setTimeout(() => {
+			  clearInterval(interval)
+		  }, 600)
+		}
+
+		setTimeout(() => {
+      	  explosives.splice(explosiveIndex, 1)
+		  projectiles.splice(projectileIndex, 1)
+		}, 0)
+	  }
+    })
+  })
 }
 
 addEventListener('click', (event) => {
@@ -224,6 +294,7 @@ addEventListener('click', (event) => {
 startGameEl.addEventListener('click', () => {
   init()
   animate()
-  spawnEnemies()
+  enemySpawnInterval = spawnEnemies()
+  explosiveSpawnInterval = spawnExplosives()
   modalEl.style.display = 'none'
 })
