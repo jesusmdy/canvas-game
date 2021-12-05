@@ -113,6 +113,8 @@ let explosives
 let particles
 let animationId
 let score
+let enemySpawnInterval
+let explosiveSpawnInterval
 function init() {
   x = canvas.width / 2
   y = canvas.height / 2
@@ -128,7 +130,7 @@ function init() {
 }
 
 function spawnEnemies() {
-  setInterval(() => {
+  return setInterval(() => {
     const {width, height} = canvas
     const color = `hsl(${Math.random() * 360}, 50%, 50%)`
     const radius = Math.random() * (35 - 4) + 4
@@ -151,7 +153,7 @@ function spawnEnemies() {
   }, 1000)
 }
 function spawnExplosives() {
-	setInterval(() => {
+	return setInterval(() => {
 		const {width, height} = canvas
 		let xPos = Math.random() * width
 		let yPos = Math.random() * height
@@ -191,6 +193,8 @@ function animate() {
     const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y)
     if(distance - enemy.radius - player.radius < 1) {
       // end game
+	  clearInterval(enemySpawnInterval)
+	  clearInterval(explosiveSpawnInterval)
       cancelAnimationFrame(animationId)
       modalEl.style.display = 'flex'
       modalScoreEl.textContent = score
@@ -290,7 +294,7 @@ addEventListener('click', (event) => {
 startGameEl.addEventListener('click', () => {
   init()
   animate()
-  spawnEnemies()
-  spawnExplosives()
+  enemySpawnInterval = spawnEnemies()
+  explosiveSpawnInterval = spawnExplosives()
   modalEl.style.display = 'none'
 })
