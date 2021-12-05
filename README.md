@@ -6,6 +6,7 @@ This is a project maded by a tutorial but with different methods and paradigm
 * Enemies
 * Bullets
 * Particles
+* Explosives
 
 Play this game [here](https://jesusmdy.github.io/canvas-game/)
 
